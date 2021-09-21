@@ -13,11 +13,11 @@
 # NASDIR='/mnt/NAS/luke/autobackup' # where to backup the directory tree
 
 # DO NOT include trailing slashes for either directory name
-BACKUPDIR='/home/pi'
-NASDIR='/mnt/NAS/luke/autobackup'
+BACKUPDIR='/home/jose'
+NASDIR='/mnt/NAS/jose/autobackup'
 
 MOUNTSTRING='dreadd'  # if this string does not show up in the list of mounted drives, the script will abort
-TESTRUN=false        # if true, nothing actually gets backed up
+TESTRUN=true        # if true, nothing actually gets backed up
 
 # if there's anything else you want to exclude from backups, add it here
 EXCLUDE={'*.dat','.phy','.cache','.config','.dropbox*'} 
@@ -94,11 +94,18 @@ echo MOUNTSTRING: $MOUNTSTRING
 echo TESTRUN: $TESTRUN
 echo EXCLUDING: $EXCLUDE 
 
+# set test flag for rsync
+if [ $TESTRUN = true ] ; then
+	TESTFLAG='-n'
+else
+	TESTFLAG=''
+fi
+
 # test if dreadd is mounted - if not, don't do backup
 /usr/bin/df | /usr/bin/grep $MOUNTSTRING
 if [ ${?} -eq 0 ] ; then
 
-	eval /usr/bin/rsync -v -a --progress --exclude=$EXCLUDE --safe-links \
+	eval /usr/bin/rsync -v -a $TESTFLAG --progress --exclude=$EXCLUDE --safe-links \
 	--itemize-changes --no-perms --no-owner --stats \
 	$BACKUPDIR $NASDIR
 	echo	
